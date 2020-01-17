@@ -42,10 +42,9 @@ room['narrow'].w_to = room['foyer']
 room['narrow'].n_to = room['treasure']
 room['treasure'].s_to = room['narrow']
 
-#  rooms link to items
-room['overlook'].items.append(item['coins'])
-room['narrow'].items.append(item['key'])
-room['foyer'].items.append(item['pencil'])
+room['treasure'].add_item('gold')
+room['overlook'].add_item('key')
+room['overlook'].add_item('mud')
 
 #####################################
 #                                   #
@@ -74,20 +73,42 @@ room['foyer'].items.append(item['pencil'])
 
 player = Player(input("Please enter your name: "), room['outside'])
 print(player.current_room)
+current_room = player.current_room
 
-directions = ["n", "s", "e", "w"]
 # Create basic REPL loop
 while True:
     # Read command
-    cmd = input("~~> ").lower()
+
+    directions = ["n", "s", "e", "w"]
+    actions = ["get", "drop"]
+    cmd = input("~~> ").lower().split(" ")
+    player_action = cmd[0]
+    if len(cmd) > 1:
+        item_of_interest = cmd[1]
+
     # Check if it's n/s/e/w/q
-    if cmd in directions:
+    if player_action in directions:
         # Make player travel in that direction
-        player.travel(cmd)
-    elif cmd == "q":
+        player.travel(player_action)
+    elif player_action == "q":
         # Quit
         print("Goodbye!")
         exit()
+    elif player_action == "i":
+        player.list_inventory()
+    elif player_action == "l":
+        current_room.items_avail()
+    elif player_action in actions:
+        if player_action == "get":
+            item_location = current_room.item_locate(item_of_interest)
+            if item_location:
+                player.add_item_in(item_location)
+                current_room.delete_item(item_location)
+            else:
+                print("Can't find this item\n")
+        elif player_action == "drop":
+            item_removed = player.remove_item_in(item_of_interest)
+            current_room.add_item(item_removed)
     else:
         print("I did not recognize that command")
 

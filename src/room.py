@@ -3,7 +3,7 @@
 
 
 class Room:
-    def __init__(self, name, description):
+    def __init__(self, name, description, *item_list):
         self.name = name
         self.description = description
 
@@ -11,7 +11,10 @@ class Room:
         self.s_to = None
         self.w_to = None
         self.e_to = None
-        self.items = []
+        self.list = []
+        if len(item_list) > 0:
+            for item in item_list:
+                self.list.append(item)
 
     def __str__(self):
         display_string = ""
@@ -40,6 +43,27 @@ class Room:
 
     def get_exits_string(self):
         return f"Exits: {', '.join(self.get_exits())}"
+
+    def add_item(self, item):
+        self.list.append(item)
+
+    def delete_item(self, item):
+        self.list.remove(item)
+
+    def item_locate(self, item_name):
+        for item in self.list:
+            if item.name.lower() == item_name.lower():
+                return item
+            else:
+                return None
+
+    def items_avail(self):
+        if self.list == []:
+            print("You look around and see no items here.\n")
+        else:
+            for item in self.list:
+                print(
+                    f"You look around and found a {item.name} \n Description: {item.description}\n")
 
     # r0 = Room("Starting Room", "This is where you start!")
     # r1 = Room("Next room", "this is where you go!")
